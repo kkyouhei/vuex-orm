@@ -607,7 +607,7 @@ export default class Repo {
     let item: Collection = collection
 
     if (!_.isEmpty(this.load)) {
-      item = _.map(item, data => this.loadRelations(data))
+      item = this.loadRelationsTest(item)
     }
 
     if (!this.wrap) {
@@ -615,6 +615,12 @@ export default class Repo {
     }
 
     return _.map(item, data => new this.entity(data))
+  }
+
+  loadRelationsTest (data: PlainCollection): Record[] {
+    return _.reduce(this.load, (records, relation) => {
+      return this.entity.fields()[relation.name].load(this, records, relation)
+    }, data)
   }
 
   /**

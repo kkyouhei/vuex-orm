@@ -2,6 +2,7 @@ import * as _ from '../../support/lodash'
 import { Record, NormalizedData, PlainCollection } from '../../data/Contract'
 import Model from '../../model/Model'
 import Repo, { Relation as Load } from '../../repo/Repo'
+import Query from '../../repo/Query'
 import Relation from './Relation'
 
 export type Entity = typeof Model | string
@@ -111,28 +112,78 @@ export default class BelongsToMany extends Relation {
   /**
    * Load the belongs to relationship for the record.
    */
-  load (repo: Repo, record: Record, relation: Load): PlainCollection {
+  // load (repo: Repo, record: Record, relation: Load): PlainCollection {
+  //   const pivotQuery = new Repo(repo.state, this.pivot.entity, false)
+
+  //   const relatedItems = pivotQuery.where(this.foreignPivotKey, record[this.parentKey]).get()
+
+  //   if (relatedItems.length === 0) {
+  //     return []
+  //   }
+
+  //   const relatedIds = _.map(relatedItems, this.relatedPivotKey)
+
+  //   const relatedQuery = new Repo(repo.state, this.related.entity, false)
+
+  //   relatedQuery.where(this.relatedKey, (v: any) => _.includes(relatedIds, v))
+
+  //   this.addConstraint(relatedQuery, relation)
+
+  //   return relatedQuery.get()
+  // }
+
+  load (repo: Repo, collection: PlainCollection, relation: Load): PlainCollection {
     const pivotQuery = new Repo(repo.state, this.pivot.entity, false)
-
-    // const relatedItems = pivotQuery.where((rec: any) => {
-    //   return rec[this.foreignPivotKey] === record[this.parentKey]
-    // }).get()
-
-    const relatedItems = pivotQuery.where(this.foreignPivotKey, record[this.parentKey]).get()
-
-    if (relatedItems.length === 0) {
-      return []
-    }
-
-    const relatedIds = _.map(relatedItems, this.relatedPivotKey)
-
     const relatedQuery = new Repo(repo.state, this.related.entity, false)
 
-    relatedQuery.where(this.relatedKey, (v: any) => _.includes(relatedIds, v))
+    const thisIds = collection.map(rec => rec[this.parentKey])
 
-    this.addConstraint(relatedQuery, relation)
+    const pivots = pivotQuery.where(this.foreignPivotKey, (v: any) => thisIds.includes(v)).get()
 
-    return relatedQuery.get()
+    const pivotIds = pivots.map(rec => rec[this.foreignPivotKey])
+
+    const relateds = relatedQuery.where(this.relatedKey, (v: any) => pivotIds.includes(v)).get()
+
+    const relRecords = relateds.reduce((records, record) => {
+      records[record[this.relatedKey]] = record
+
+      return records
+    }, {})
+
+    const rels = pivots.reduce((records, record) => {
+      const key = record[this.foreignPivotKey]
+
+      if (!records[key]) {
+        records[key] = []
+      }
+
+      records[key].push(relRecords[record[this.relatedPivotKey]])
+
+      return records
+    }, {})
+
+    return collection.map((item) => {
+      item[relation.name] = rels[item[this.parentKey]]
+
+      return item
+    })
+
+    return collection.map((item) => {
+      // const pivots = pivotQuery.where(this.foreignPivotKey, item[this.parentKey]).get()
+
+      // const relatedIds = pivots.map(pivot => pivot[this.relatedPivotKey])
+
+      // relatedQuery.where(this.relatedKey, (v: any) => relatedIds.includes(v))
+
+      // this.addConstraint(relatedQuery, relation)
+
+      // item[relation.name] = relatedQuery.get()
+
+      pivotQuery.query.wheres = []
+      relatedQuery.query.wheres = []
+
+      return item
+    })
   }
 
   /**

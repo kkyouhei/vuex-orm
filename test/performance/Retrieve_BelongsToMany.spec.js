@@ -21,13 +21,13 @@ describe('Performance – Retrieve – BelongsToMany', () => {
       static fields () {
         return {
           id: this.attr(null),
-          name: this.attr('')
+          roleType: this.attr('')
         }
       }
     }
 
     class RoleUser extends Model {
-      static entity = 'roleUsers'
+      static entity = 'roleUser'
 
       static primaryKey = ['role_id', 'user_id']
 
@@ -41,9 +41,9 @@ describe('Performance – Retrieve – BelongsToMany', () => {
 
     const users = []
     const roles = []
-    const roleUsers = []
+    const roleUser = []
 
-    for (let i = 1; i <= 2000; i++) {
+    for (let i = 1; i <= 50; i++) {
       users.push({ id: i })
     }
 
@@ -52,19 +52,19 @@ describe('Performance – Retrieve – BelongsToMany', () => {
     }
 
     for (let i = 1; i <= 2000; i++) {
-      roleUsers.push({ user_id: i, role_id: i })
+      roleUser.push({ user_id: i, role_id: i })
     }
 
     const store = createStore([{ model: User }, { model: Role }, { model: RoleUser }])
 
     await store.dispatch('entities/users/create', { data: users })
     await store.dispatch('entities/roles/create', { data: roles })
-    await store.dispatch('entities/roleUsers/create', { data: roleUsers })
+    await store.dispatch('entities/roleUser/create', { data: roleUser })
 
     console.time('time')
 
     const result = store.getters['entities/users/query']().with('roles').get()
-
+console.log(result[0].roles[0])
     console.log('--TEST TIME--------------')
     console.timeEnd('time')
     console.log('-------------------------')
