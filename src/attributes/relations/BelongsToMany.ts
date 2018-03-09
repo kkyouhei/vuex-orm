@@ -114,9 +114,11 @@ export default class BelongsToMany extends Relation {
   load (repo: Repo, record: Record, relation: Load): PlainCollection {
     const pivotQuery = new Repo(repo.state, this.pivot.entity, false)
 
-    const relatedItems = pivotQuery.where((rec: any) => {
-      return rec[this.foreignPivotKey] === record[this.parentKey]
-    }).get()
+    // const relatedItems = pivotQuery.where((rec: any) => {
+    //   return rec[this.foreignPivotKey] === record[this.parentKey]
+    // }).get()
+
+    const relatedItems = pivotQuery.where(this.foreignPivotKey, record[this.parentKey]).get()
 
     if (relatedItems.length === 0) {
       return []
