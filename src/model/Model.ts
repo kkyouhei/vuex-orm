@@ -455,13 +455,6 @@ export default class Model {
   }
 
   /**
-   * Create a new plain model record.
-   */
-  static makePlain (data: Record): Record {
-    return this.make(data, true)
-  }
-
-  /**
    * Remove any fields not defined in the model schema. This method
    * also fixes any incorrect values as well.
    */
@@ -666,6 +659,14 @@ export default class Model {
     return this.$dispatch('delete', condition)
   }
 
+  async $save() {
+    console.log('###########3  this #$###############')
+    console.log(this)
+    console.log('###########3 object keys #$###############')
+    console.log(Object.keys(this))
+    console.log(this.$fields())
+  }
+
   /**
    * Fill the model instance with the given record. If no record were passed,
    * or if the record has any missing fields, each value of the fields will
@@ -673,12 +674,5 @@ export default class Model {
    */
   $fill (record?: Record): void {
     this.$self().fill(this, record)
-  }
-
-  /**
-   * Serialize field values into json.
-   */
-  $toJson (): Record {
-    return this.$self().makePlain(this)
   }
 }

@@ -703,16 +703,27 @@ export default class Query {
   get (): Data.Collection {
     const records = this.process()
 
-    return this.collect(records)
+    const hoge = this.collect(records)
+console.log('######### get #################')
+hoge.forEach((v) => {
+  console.log(v.constructor.name)
+})
+    return hoge
   }
 
   /**
    * Returns the first record of the query chain result.
    */
   first (): Data.Item {
+console.log('######### first #################')
     const records = this.process()
 
-    return this.item(records[0])
+    const hoge = this.item(records[0])
+    if(hoge !== null) {
+      console.log(hoge.constructor.name)
+    }
+
+    return hoge
   }
 
   /**

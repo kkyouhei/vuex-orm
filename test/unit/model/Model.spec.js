@@ -130,42 +130,6 @@ describe('Model', () => {
     expect(user.name).toBe('John Doe')
   })
 
-  it('can make a plain model record', () => {
-    class User extends Model {
-      static entity = 'users'
-
-      static fields () {
-        return {
-          id: this.attr(null)
-        }
-      }
-    }
-
-    const user = User.makePlain({ id: 1 })
-
-    expect(user).not.toBeInstanceOf(User)
-    expect(user.id).toBe(1)
-  })
-
-  it('can serialize own fields into json', () => {
-    class User extends Model {
-      static entity = 'users'
-
-      static fields () {
-        return {
-          id: this.attr(null),
-          name: this.attr('')
-        }
-      }
-    }
-
-    const data = { $id: 1, id: 1, name: 'John Doe' }
-
-    const user = new User(data)
-
-    expect(user.$toJson()).toEqual(data)
-  })
-
   it('can get a value of the primary key', () => {
     class User extends Model {
       static fields () {

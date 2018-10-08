@@ -47,6 +47,7 @@ describe('Feature – Retrieve', () => {
   })
 
   it('can retrieve all records as a model instance by get method', () => {
+    console.log('hogehogehogehogehoge')
     const store = createStore([{ model: User }])
 
     store.dispatch('entities/users/create', {
@@ -56,6 +57,13 @@ describe('Feature – Retrieve', () => {
     const expected = [{ $id: 1, id: 1 }, { $id: 2, id: 2 }]
 
     const users = store.getters['entities/users/query']().get()
+
+    console.log('$$$$$$$$$$$$$$$$$$$$ users $$$$$$$$$$$$$$$$$')
+    console.log(users[0])
+    console.log('$$$$$$$$$$$$$$$$$$$$ call save method $$$$$$$$$$$$$$$$$')
+    users.forEach(element => {
+      element.$save()
+    });
 
     expect(users.length).toBe(2)
     expect(users[0]).toBeInstanceOf(User)
