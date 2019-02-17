@@ -101,6 +101,8 @@ export default abstract class Relation extends Attribute {
    * Convert given records to the collection.
    */
   makeManyRelation (records: any, model: typeof Model): Collection {
+    // console.log('make many relation')
+    // console.log(records)
     if (!this.isManyRelation(records)) {
       return []
     }

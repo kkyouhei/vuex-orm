@@ -90,7 +90,10 @@ export default class BelongsToMany extends Relation {
    * Convert given value to the appropriate value for the attribute.
    */
   make (value: any, _parent: Record, _key: string): Model[] {
-    return this.makeManyRelation(value, this.related)
+    const hoge = this.makeManyRelation(value, this.related)
+    console.log('make')
+    console.log(hoge)
+    return hoge
   }
 
   /**

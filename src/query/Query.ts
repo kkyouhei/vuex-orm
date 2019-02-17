@@ -273,7 +273,9 @@ export default class Query<T extends Model = Model> {
   get (): Data.Collection<T> {
     const records = this.select()
 
-    return this.collect(records) as Data.Collection<T> // TODO: Delete "as ..." when model type coverage reaches 100%.
+    const hoge = this.collect(records) as Data.Collection<T> // TODO: Delete "as ..." when model type coverage reaches 100%.
+    // console.log(hoge)
+    return hoge
   }
 
   /**
@@ -556,7 +558,11 @@ export default class Query<T extends Model = Model> {
 
     // Next, get all record as an array and then start filtering it through.
     let records = this.records()
-
+    console.log('########### after records method ##########')
+    // records.forEach( (v) => {
+    //   console.log(v['roles'])
+    // })
+    // console.log(records)
     // Process `beforeProcess` hook.
     records = this.hook.executeSelectHook('beforeSelect', records)
 
